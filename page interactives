@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Atomic Structure & Bonding Lab (Click-to-Place)</title>
+<style>
+  *{box-sizing:border-box}html,body{margin:0;padding:0}
+  body{font-family:Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);min-height:100vh;padding:20px}
+  .container{max-width:1400px;margin:0 auto;background:#fff;border-radius:20px;padding:30px;box-shadow:0 20px 60px rgba(0,0,0,.25)}
+  h1{text-align:center;color:#667eea;margin:0 0 10px;font-size:2.1rem}
+  .subtitle{text-align:center;color:#666;margin-bottom:22px}
+  .section{margin-bottom:26px}
+  .section-title{background:#667eea;color:#fff;padding:10px 16px;border-radius:10px;font-size:1.1rem;margin-bottom:14px}
+  .element-selector{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;margin-bottom:20px}
+  .element-card{background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:#fff;padding:12px 18px;border-radius:12px;cursor:pointer;border:3px solid transparent;min-width:100px;text-align:center;transition:transform .2s,box-shadow .2s,border-color .2s}
+  .element-card:hover{transform:translateY(-3px);box-shadow:0 8px 18px rgba(0,0,0,.25)}
+  .element-card.selected{border-color:#ffd700;box-shadow:0 0 18px rgba(255,215,0,.45)}
+  .element-symbol{font-weight:800;font-size:1.6rem}
+  .element-info{opacity:.95;font-size:.85rem}
+  .workspace{display:grid;grid-template-columns:1fr 1fr;gap:26px;margin-top:10px}
+  .atom-builder{background:#f8f9fa;border-radius:15px;padding:20px;border:3px solid #dee2e6}
+  .plate{width:100%;max-width:400px;height:400px;background:#fff;border-radius:50%;border:8px solid #ff9800;position:relative;margin:0 auto 14px;box-shadow:0 8px 20px rgba(0,0,0,.18)}
+  .nucleus{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:#ffc107;border-radius:50%;padding:18px;border:4px solid #ff9800;min-width:96px;min-height:96px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:700;z-index:2}
+  .nucleus-label{font-size:.8rem;color:#6c4c00;margin-bottom:4px}
+  .particle-count{font-size:1rem;color:#333}
+  .electron-shell{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);border:3px dashed #6c757d;border-radius:50%;cursor:pointer}
+  .electron-shell:hover{background:rgba(102,126,234,.06);border-color:#667eea}
+  .shell-1{width:140px;height:140px}
+  .shell-2{width:240px;height:240px}
+  .shell-3{width:340px;height:340px}
+  .valence-shell{border-color:#28a745;border-width:4px;background:rgba(40,167,69,.1)}
+  .shell-label{position:absolute;top:4px;left:50%;transform:translateX(-50%);font-size:.72rem;font-weight:700;color:#6c757d;background:#fff;padding:2px 6px;border-radius:4px;border:1px solid #6c757d;pointer-events:none}
+  .electron-pool{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;padding:14px;background:#e7f3ff;border-radius:10px;border:3px dashed #667eea;margin-bottom:12px;min-height:78px}
+  .electron{width:30px;height:30px;background:#3498db;border:3px solid #2980b9;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:800;cursor:pointer;user-select:none;transition:transform .15s,box-shadow .15s}
+  .electron.selected{outline:3px solid #ffd700}
+  .electron.placed{position:absolute}
+  .electron.placed:hover{transform:scale(1.18);box-shadow:0 0 10px rgba(52,152,219,.5)}
+  .info-panel{background:#fff;border-radius:15px;padding:16px;border:3px solid #dee2e6}
+  .info-box{background:#e7f3ff;border-left:4px solid #667eea;padding:12px;border-radius:6px;margin-bottom:12px}
+  .info-box h3{color:#667eea;margin:0 0 8px}
+  .info-box p{margin:0 0 6px;color:#495057}
+  .valence-count{background:#28a745;color:#fff;padding:12px;border-radius:10px;text-align:center;font-size:1.1rem;font-weight:800;margin-bottom:12px}
+  .question-box{background:#fff3cd;border:3px solid #ffc107;border-radius:10px;padding:14px;margin-top:10px}
+  .answer-options{display:flex;flex-direction:column;gap:8px}
+  .answer-btn{background:#fff;border:2px solid #ffc107;padding:10px;border-radius:8px;cursor:pointer;font-weight:700;color:#8a6d00}
+  .answer-btn:hover{background:#ffc107;color:#fff;transform:translateX(4px)}
+  .answer-btn.selected{background:#28a745;border-color:#28a745;color:#fff}
+  .bonding-section{background:#f8f9fa;border-radius:15px;padding:20px;border:3px solid #dee2e6;margin-top:24px}
+  .bonding-pairs{display:flex;gap:16px;flex-wrap:wrap;justify-content:center;margin-top:10px}
+  .bond-card{background:#fff;border:3px solid #667eea;border-radius:12px;padding:16px;cursor:pointer;min-width:200px;text-align:center;transition:transform .2s,box-shadow .2s,border-color .2s}
+  .bond-card:hover{transform:translateY(-3px);box-shadow:0 8px 18px rgba(0,0,0,.2);border-color:#ffd700}
+  .bond-card.active{background:#d4edda;border-color:#28a745}
+  .bond-formula{font-size:1.3rem;font-weight:800;color:#667eea;margin-bottom:8px}
+  .bond-card.active .bond-formula{color:#28a745}
+  .bond-diagram{margin-top:10px;padding-top:10px;border-top:2px dashed #dee2e6;font-family:monospace;color:#333;white-space:pre-line}
+  .controls{display:flex;gap:10px;justify-content:center;margin-top:10px;flex-wrap:wrap}
+  .btn{background:#667eea;color:#fff;border:none;padding:10px 18px;border-radius:8px;cursor:pointer;font-weight:800}
+  .btn:hover{background:#764ba2}
+  .btn-secondary{background:#6c757d}
+  .btn-secondary:hover{background:#5a6268}
+  .instruction-banner{background:#d1ecf1;border:2px solid #0c5460;border-radius:10px;padding:10px;margin-bottom:10px;color:#0c5460;font-weight:700;text-align:center}
+  .progress{background:#e9ecef;border-radius:10px;height:28px;margin-bottom:10px;overflow:hidden}
+  .progress-bar{background:linear-gradient(90deg,#667eea 0%,#764ba2 100%);height:100%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:.9rem;transition:width .25s}
+  @media (max-width:980px){.workspace{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+  <div class="container">
+    <h1>🔬 Atomic Structure & Bonding Lab</h1>
+    <p class="subtitle">Click a shell to place electrons from the pool. Click a placed electron to return it.</p>
+
+    <div class="section">
+      <div class="section-title">📋 Step 1: Select an Element</div>
+      <div class="element-selector" id="elementSelector"></div>
+    </div>
+
+    <div class="workspace" id="workspace" style="display:none;">
+      <div class="atom-builder">
+        <div class="instruction-banner">🎯 Click a shell to add one electron from the pool. Click a placed electron to remove it.</div>
+        <div class="progress"><div class="progress-bar" id="progressBar" style="width:0%;">0 electrons placed</div></div>
+        <div class="plate" id="atomPlate"></div>
+
+        <div class="electron-pool" id="electronPool">
+          <div style="width:100%;text-align:center;color:#667eea;font-weight:800;margin-bottom:6px">Available Electrons</div>
+        </div>
+
+        <div class="controls">
+          <button class="btn" onclick="resetAtom()">Reset Atom</button>
+          <button class="btn btn-secondary" onclick="selectNewElement()">Choose Different Element</button>
+          <button class="btn" id="markValenceBtn" onclick="markValenceShell()" style="display:none;">Mark Valence Shell</button>
+        </div>
+      </div>
+
+      <div class="info-panel">
+        <div class="info-box">
+          <h3>Element Information</h3>
+          <p id="elementName"></p>
+          <p id="atomicNumber"></p>
+          <p id="electronConfig"></p>
+        </div>
+        <div class="valence-count" id="valenceCount">Valence Electrons: -</div>
+
+        <div class="info-box">
+          <h3>📚 2‑8‑8 Rule</h3>
+          <p><strong>Shell 1:</strong> up to 2 electrons</p>
+          <p><strong>Shell 2:</strong> up to 8 electrons</p>
+          <p><strong>Shell 3:</strong> up to 8 electrons</p>
+          <p style="margin-top:6px;color:#28a745"><strong>Fill shells from inside out. The outermost occupied shell is the valence shell.</strong></p>
+        </div>
+
+        <div class="question-box" id="questionBox" style="display:none;">
+          <h4>🤔 Would this atom want to gain, lose, or share electrons?</h4>
+          <div class="answer-options">
+            <button class="answer-btn" onclick="selectAnswer('gain')">Gain electrons</button>
+            <button class="answer-btn" onclick="selectAnswer('lose')">Lose electrons</button>
+            <button class="answer-btn" onclick="selectAnswer('share')">Share electrons</button>
+          </div>
+          <div id="answerFeedback" style="margin-top:10px;display:none;"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bonding-section" id="bondingSection" style="display:none;">
+      <div class="section-title">🤝 Extension: Bonding Pairs</div>
+      <p style="text-align:center;color:#666;margin:6px 0 10px">Click a pair to see how electrons are shared or transferred.</p>
+      <div class="bonding-pairs" id="bondingPairs"></div>
+    </div>
+  </div>
+
+<script>
+  // ------- Data -------
+  const elements = {
+    H:{name:'Hydrogen', atomic:1,  protons:1,  neutrons:0,  electrons:1,  valence:1, answer:'share'},
+    C:{name:'Carbon',   atomic:6,  protons:6,  neutrons:6,  electrons:6,  valence:4, answer:'share'},
+    N:{name:'Nitrogen', atomic:7,  protons:7,  neutrons:7,  electrons:7,  valence:5, answer:'share'},
+    O:{name:'Oxygen',   atomic:8,  protons:8,  neutrons:8,  electrons:8,  valence:6, answer:'share'},
+    P:{name:'Phosphorus',atomic:15,protons:15, neutrons:16, electrons:15, valence:5, answer:'share'},
+    S:{name:'Sulfur',   atomic:16, protons:16, neutrons:16, electrons:16, valence:6, answer:'share'},
+    Na:{name:'Sodium',  atomic:11, protons:11, neutrons:12, electrons:11, valence:1, answer:'lose'},
+    Cl:{name:'Chlorine',atomic:17, protons:17, neutrons:18, electrons:17, valence:7, answer:'gain'}
+  };
+
+  const bonds = [
+    {formula:'H₂O',name:'Water',elements:['H','O'],diagram:'H — O — H\n(Shared electrons)',type:'covalent'},
+    {formula:'CH₄',name:'Methane',elements:['C','H'],diagram:'    H\n    |\nH — C — H\n    |\n    H\n(All shared)',type:'covalent'},
+    {formula:'NaCl',name:'Table Salt',elements:['Na','Cl'],diagram:'Na⁺    Cl⁻\n(Transfer from Na to Cl)',type:'ionic'}
+  ];
+
+  // ------- State -------
+  let currentElement = null;
+  let shellCapacities = [];
+  let placedElectrons = 0;
+
+  // ------- Init UI -------
+  function init(){
+    const selector = document.getElementById('elementSelector');
+    Object.keys(elements).forEach(sym=>{
+      const e = elements[sym];
+      const card = document.createElement('div');
+      card.className = 'element-card';
+      card.innerHTML = `
+        <div class="element-symbol">${sym}</div>
+        <div class="element-info">${e.name}<br>Atomic #: ${e.atomic}<br>Valence: ${e.valence}</div>`;
+      card.addEventListener('click', ev => selectElement(sym, ev));
+      selector.appendChild(card);
+    });
+
+    const bondingPairs = document.getElementById('bondingPairs');
+    bonds.forEach((b, i)=>{
+      const card = document.createElement('div');
+      card.className = 'bond-card';
+      card.innerHTML = `
+        <div class="bond-formula">${b.formula}</div>
+        <div class="bond-name">${b.name}</div>
+        <div class="bond-diagram" style="display:none">${b.diagram}</div>`;
+      card.addEventListener('click', ()=>{
+        const d = card.querySelector('.bond-diagram');
+        card.classList.toggle('active');
+        d.style.display = d.style.display === 'none' ? 'block' : 'none';
+      });
+      bondingPairs.appendChild(card);
+    });
+  }
+
+  // ------- Element Selection -------
+  function selectElement(symbol, ev){
+    currentElement = elements[symbol];
+    placedElectrons = 0;
+
+    document.querySelectorAll('.element-card').forEach(c=>c.classList.remove('selected'));
+    if (ev && ev.currentTarget) ev.currentTarget.classList.add('selected');
+
+    document.getElementById('workspace').style.display = 'grid';
+    document.getElementById('bondingSection').style.display = 'block';
+    document.getElementById('questionBox').style.display = 'none';
+    document.getElementById('markValenceBtn').style.display = 'none';
+
+    buildAtomStructure();
+    createElectronPool();
+    updateInfo();
+    updateProgress();
+  }
+
+  // ------- Build Diagram -------
+  function buildAtomStructure(){
+    const plate = document.getElementById('atomPlate');
+    plate.innerHTML = '';
+
+    const nucleus = document.createElement('div');
+    nucleus.className = 'nucleus';
+    nucleus.innerHTML = `
+      <div class="nucleus-label">Nucleus</div>
+      <div class="particle-count">${currentElement.protons} p⁺</div>
+      <div class="particle-count">${currentElement.neutrons} n⁰</div>`;
+    plate.appendChild(nucleus);
+
+    const total = currentElement.electrons;
+    shellCapacities = [
+      {max:2, count:0, radius:70},
+      {max:8, count:0, radius:120},
+      {max:8, count:0, radius:170}
+    ];
+
+    let shellsNeeded = 1;
+    if (total > 2) shellsNeeded = 2;
+    if (total > 10) shellsNeeded = 3;
+
+    for (let i=0;i<shellsNeeded;i++){
+      const shell = document.createElement('div');
+      shell.className = `electron-shell shell-${i+1}`;
+      shell.dataset.shell = i;
+
+      const label = document.createElement('div');
+      label.className = 'shell-label';
+      label.textContent = `Shell ${i+1}`;
+      shell.appendChild(label);
+
+      shell.addEventListener('click', () => handleShellClick(i));
+      plate.appendChild(shell);
+    }
+  }
+
+  // ------- Electron Pool -------
+  function createElectronPool(){
+    const pool = document.getElementById('electronPool');
+    const title = pool.querySelector('div');
+    pool.innerHTML = '';
+    if (title) pool.appendChild(title);
+
+    for (let i=0;i<currentElement.electrons;i++){
+      const e = document.createElement('div');
+      e.className = 'electron';
+      e.textContent = 'e⁻';
+      e.addEventListener('click', ()=>{
+        if (e.classList.contains('selected')) e.classList.remove('selected');
+        else {
+          document.querySelectorAll('.electron-pool .electron').forEach(x=>x.classList.remove('selected'));
+          e.classList.add('selected');
+        }
+      });
+      pool.appendChild(e);
+    }
+  }
+
+  // ------- Placement Logic (click-only) -------
+  function handleShellClick(shellIdx){
+    // enforce inner shells first (2‑8‑8)
+    if (shellIdx > 0){
+      const okInner = shellCapacities.slice(0, shellIdx).every((s, i)=>{
+        const max = i===0 ? 2 : 8;
+        const before = i===0 ? 0 : (i===1 ? 2 : 10);
+        const needed = Math.min(Math.max(currentElement.electrons - before, 0), max);
+        return s.count >= needed;
+      });
+      if (!okInner){ alert('Fill inner shells first! (2‑8‑8 rule)'); return; }
+    }
+
+    if (shellCapacities[shellIdx].count >= shellCapacities[shellIdx].max){
+      alert(`Shell ${shellIdx+1} is full!`);
+      return;
+    }
+
+    const poolElectron = document.querySelector('.electron-pool .electron');
+    if (!poolElectron){ return; } // none left in pool
+
+    // consume one from pool
+    poolElectron.remove();
+
+    // add placed electron
+    shellCapacities[shellIdx].count++;
+    placedElectrons++;
+
+    const dot = document.createElement('div');
+    dot.className = 'electron placed';
+    dot.textContent = 'e⁻';
+    dot.dataset.shell = shellIdx;
+
+    const count  = shellCapacities[shellIdx].count;
+    const angle  = ((count-1) / shellCapacities[shellIdx].max) * 2 * Math.PI;
+    const r      = shellCapacities[shellIdx].radius;
+    const x = r * Math.cos(angle);
+    const y = r * Math.sin(angle);
+
+    dot.style.left = `calc(50% + ${x}px)`;
+    dot.style.top  = `calc(50% + ${y}px)`;
+    dot.style.transform = 'translate(-50%,-50%)';
+
+    // return to pool on click
+    dot.addEventListener('click', function(){ returnElectronToPool(this); });
+
+    document.getElementById('atomPlate').appendChild(dot);
+
+    updateProgress();
+
+    if (placedElectrons === currentElement.electrons){
+      setTimeout(()=>{
+        document.getElementById('markValenceBtn').style.display='inline-block';
+        alert('Great job! All electrons placed. Click "Mark Valence Shell" to highlight the outermost shell.');
+      }, 150);
+    }
+  }
+
+  function returnElectronToPool(dot){
+    const s = parseInt(dot.dataset.shell,10);
+    shellCapacities[s].count--;
+    placedElectrons--;
+    dot.remove();
+
+    const pool = document.getElementById('electronPool');
+    const e = document.createElement('div');
+    e.className = 'electron';
+    e.textContent = 'e⁻';
+    e.addEventListener('click', ()=>{
+      if (e.classList.contains('selected')) e.classList.remove('selected');
+      else {
+        document.querySelectorAll('.electron-pool .electron').forEach(x=>x.classList.remove('selected'));
+        e.classList.add('selected');
+      }
+    });
+    pool.appendChild(e);
+
+    document.getElementById('markValenceBtn').style.display='none';
+    document.getElementById('questionBox').style.display='none';
+    updateProgress();
+  }
+
+  // ------- Info, Valence, Q&A -------
+  function updateProgress(){
+    const total = currentElement.electrons;
+    const pct = (placedElectrons/total)*100;
+    const bar = document.getElementById('progressBar');
+    bar.style.width = pct + '%';
+    bar.textContent = `${placedElectrons} / ${total} electrons placed`;
+  }
+
+  function markValenceShell(){
+    let outer = -1;
+    for (let i=shellCapacities.length-1;i>=0;i--){
+      if (shellCapacities[i].count > 0){ outer = i; break; }
+    }
+    if (outer >= 0){
+      const shells = document.querySelectorAll('.electron-shell');
+      shells.forEach((s,i)=>{
+        s.classList.remove('valence-shell');
+        if (i===outer) s.classList.add('valence-shell');
+      });
+      document.getElementById('questionBox').style.display = 'block';
+      alert(`Valence shell highlighted: Shell ${outer+1}. It has ${shellCapacities[outer].count} electron(s).`);
+    }
+  }
+
+  function updateInfo(){
+    const sym = Object.keys(elements).find(k => elements[k] === currentElement);
+    document.getElementById('elementName').innerHTML = `<strong>Element:</strong> ${currentElement.name} (${sym})`;
+    document.getElementById('atomicNumber').innerHTML = `<strong>Atomic Number:</strong> ${currentElement.atomic}`;
+    document.getElementById('electronConfig').innerHTML = `<strong>Total Electrons:</strong> ${currentElement.electrons}`;
+    document.getElementById('valenceCount').textContent = `Valence Electrons: ${currentElement.valence}`;
+    document.querySelectorAll('.answer-btn').forEach(b=>b.classList.remove('selected'));
+    document.getElementById('answerFeedback').style.display='none';
+  }
+
+  function selectAnswer(ans){
+    document.querySelectorAll('.answer-btn').forEach(b=>b.classList.remove('selected'));
+    if (window.event && window.event.target) window.event.target.classList.add('selected');
+    const correct = currentElement.answer;
+    const fb = document.getElementById('answerFeedback');
+    fb.style.display = 'block';
+    if (ans === correct){
+      fb.innerHTML = `<p style="color:#28a745;font-weight:800">✓ Correct! ${explain()}</p>`;
+    } else {
+      fb.innerHTML = `<p style="color:#b52d2d;font-weight:800">✗ Not quite. Think about how close the atom is to a full outer shell. ${explain()}</p>`;
+    }
+  }
+
+  function explain(){
+    const v = currentElement.valence;
+    if (v === 1 || v === 2) return `With ${v} valence electron(s), losing them is easier to reach stability.`;
+    if (v >= 5 && v <= 7) return `With ${v} valence electrons, it is close to 8 and tends to gain ${8 - v}.`;
+    return `With ${v} valence electrons, sharing through covalent bonds is typical.`;
+  }
+
+  // ------- Reset / Change -------
+  function resetAtom(){
+    if (!currentElement) return;
+    placedElectrons = 0;
+    shellCapacities = [{max:2,count:0,radius:70},{max:8,count:0,radius:120},{max:8,count:0,radius:170}];
+    buildAtomStructure();
+    createElectronPool();
+    updateProgress();
+    document.getElementById('markValenceBtn').style.display='none';
+    document.getElementById('questionBox').style.display='none';
+    document.getElementById('answerFeedback').style.display='none';
+  }
+
+  function selectNewElement(){
+    document.getElementById('workspace').style.display='none';
+    document.getElementById('bondingSection').style.display='none';
+    document.querySelectorAll('.element-card').forEach(c=>c.classList.remove('selected'));
+    currentElement = null;
+    placedElectrons = 0;
+  }
+
+  // Boot
+  init();
+</script>
+</body>
+</html>
